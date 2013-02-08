@@ -1,15 +1,49 @@
 // Lava lamp code for HCI (COS 436/ELE 469)
 
 int RGBLED_Red = 3;
+int RGB_RLO = 0;
+int RGB_RHI = 300;
+
 int RGBLED_Blue = 5;
+int RGB_BLO = 0;
+int RGB_BHI = 300;
+
 int RGBLED_Green = 6;
+int RGB_GLO = 0;
+int RGB_GHI = 300;
+
+//Red LEDs
 int LED2 = 9;
+int LED2LO = 250;
+int LED2HI = 550;
+
+// Green LED
 int LED3 = 10;
+int LED3LO = 500;
+int LED3HI = 800;
+
+// Blue LED
 int LED4 = 11;
+int LED4LO = 750;
+int LED4HI = 1023;
 
 // N.B. The softpot should be plugged into analog pin A0.
 
-void setVals(int rgb_r, int rgb_b, int rgb_g, int l2, int l3, int l4) {
+int scale(double lo, double hi, double cur) {
+  if (cur > hi) return 255;
+  if (cur < lo) return 0;
+  return 255 * (cur - lo) / (hi - lo)
+}
+
+void setVals(int cur) {
+  int rgb_r = scale(RGB_RLO, RGB_RHI, cur);
+  int rgb_g = scale(RGB_GLO, RGB_GHI, cur);
+  int rgb_b = scale(RGB_BLO, RGB_BHI, cur);
+  
+  int l2 = scale(LED2LO, LED2HI, cur);
+  int l3 = scale(LED3LO, LED3HI, cur);
+  int l4 = scale(LED4LO, LED4HI, cur);
+  
   analogWrite(RGBLED_Red, rgb_r);
   analogWrite(RGBLED_Blue, rgb_b);
   analogWrite(RGBLED_Green, rgb_g);
@@ -29,6 +63,5 @@ void setup() {
 }
 
 void loop() {
-  // First, get the value of the softpot.
-  int softpot = analogRead(A0);
+  setVals(analogRead(A0));
 }
