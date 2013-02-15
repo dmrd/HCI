@@ -31,7 +31,8 @@ int RGBLED_Green = 6;
 int RGB_GLO = 0;
 int RGB_GHI = 300;
 
-// Red LEDs
+//Red LEDs
+
 int LED2 = 9;
 int LED2LO = 250;
 int LED2HI = 550;
@@ -59,11 +60,25 @@ void setVals(int cur) {
   int rgb_r = scale(RGB_RLO, RGB_RHI, cur);
   int rgb_g = scale(RGB_GLO, RGB_GHI, cur);
   int rgb_b = scale(RGB_BLO, RGB_BHI, cur);
-
   int l2 = scale(LED2LO, LED2HI, cur);
   int l3 = scale(LED3LO, LED3HI, cur);
   int l4 = scale(LED4LO, LED4HI, cur);
 
+int scale(double lo, double hi, double cur) {
+  if (cur > hi) return 255;
+  if (cur < lo) return 0;
+  return 255 * (cur - lo) / (hi - lo)
+}
+
+void setVals(int cur) {
+  int rgb_r = scale(RGB_RLO, RGB_RHI, cur);
+  int rgb_g = scale(RGB_GLO, RGB_GHI, cur);
+  int rgb_b = scale(RGB_BLO, RGB_BHI, cur);
+  
+  int l2 = scale(LED2LO, LED2HI, cur);
+  int l3 = scale(LED3LO, LED3HI, cur);
+  int l4 = scale(LED4LO, LED4HI, cur);
+  
   analogWrite(RGBLED_Red, rgb_r);
   analogWrite(RGBLED_Blue, rgb_b);
   analogWrite(RGBLED_Green, rgb_g);
