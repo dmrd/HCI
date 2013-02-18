@@ -19,81 +19,87 @@
   corresponds to a color in the LED and is independently
   controllable.
 */
-int RGBLED_Red = 3;
-int RGB_RLO = 0;
-int RGB_RHI = 300;
 
-int RGBLED_Blue = 5;
-int RGB_BLO = 0;
-int RGB_BHI = 300;
+int range = 300;
 
-int RGBLED_Green = 6;
-int RGB_GLO = 0;
-int RGB_GHI = 300;
+int RGBLED_Red = 9;
+int RGB_R_mid = 100;
 
-//Red LEDs
+int RGBLED_Blue = 10;
+int RGB_B_mid = 500;
 
-int LED2 = 9;
-int LED2LO = 250;
-int LED2HI = 550;
-
-// Green LED
-int LED3 = 10;
-int LED3LO = 500;
-int LED3HI = 800;
-
-// Blue LED
-int LED4 = 11;
-int LED4LO = 750;
-int LED4HI = 1023;
+int RGBLED_Green = 11;
+int RGB_G_mid = 900;
 
 int softpot = A0;
 int photosensor = A1;
+int button = 2;
 
-int scale(double lo, double hi, double cur) {
-  if (cur > hi) return 255;
-  if (cur < lo) return 0;
-  return 255 * (cur - lo) / (hi - lo)
+// brightness ranges from 0 to 1
+double brightness = 1.0;
+
+// mode is:
+//   0: set color
+//   1: set brightness
+int mode = 0;
+
+// psthreshold is the least amount of light needed to activate the lights
+int psthreshold = 850;
+
+// state variable is:
+//    0: off
+//    1: on
+int state = 0;
+
+int getBrightness(double mid, double cur) {
+  int t1 = abs(mid - cur);
+  int t2 = abs(mid - (cur - 1024));
+  int t3 = abs(mid - (cur + 1024));
+  
+  int test1 = min(t1, t2);
+  int minimum = min(test1, t3);
+  
+  if (minimum > range) return 0.0;
+  
+  return 255 * (range - minimum) / range;
 }
 
 void setVals(int cur) {
-  int rgb_r = scale(RGB_RLO, RGB_RHI, cur);
-  int rgb_g = scale(RGB_GLO, RGB_GHI, cur);
-  int rgb_b = scale(RGB_BLO, RGB_BHI, cur);
-  int l2 = scale(LED2LO, LED2HI, cur);
-  int l3 = scale(LED3LO, LED3HI, cur);
-  int l4 = scale(LED4LO, LED4HI, cur);
-
-int scale(double lo, double hi, double cur) {
-  if (cur > hi) return 255;
-  if (cur < lo) return 0;
-  return 255 * (cur - lo) / (hi - lo)
+  if (state == 1) {
+    rgb_r = getBrightness(RGB_R_mid, cur);
+    rgb_g = getBrightness(RGB_G_mid, cur);
+    rgb_b = getBrightness(RGB_B_mid, cur);
+  }
+  
+  writeToLED();
 }
 
-void setVals(int cur) {
-  int rgb_r = scale(RGB_RLO, RGB_RHI, cur);
-  int rgb_g = scale(RGB_GLO, RGB_GHI, cur);
-  int rgb_b = scale(RGB_BLO, RGB_BHI, cur);
+void setBrightness(double cur) {
+  if (state == 1) 
+    brightness = cur / 1024;
   
-  int l2 = scale(LED2LO, LED2HI, cur);
-  int l3 = scale(LED3LO, LED3HI, cur);
-  int l4 = scale(LED4LO, LED4HI, cur);
-  
-  analogWrite(RGBLED_Red, rgb_r);
-  analogWrite(RGBLED_Blue, rgb_b);
-  analogWrite(RGBLED_Green, rgb_g);
-  analogWrite(LED2, l2);
-  analogWrite(LED3, l3);
-  analogWrite(LED4, l4);
+  writeToLED();
+}
+
+void writeToLED() {
+  analogWrite(RGBLED_Red, rgb_r * brightness * state);
+  analogWrite(RGBLED_Blue, rgb_b * brightness * state);
+  analogWrite(RGBLED_Green, rgb_g * brightness * state);
+}
+
+void toggleMode() {
+  if (mode == 1)
+    mode = 0;
+  else
+    mode = 1;
 }
 
 void setup() {
   pinMode(RGBLED_Red, OUTPUT);
   pinMode(RGBLED_Blue, OUTPUT);
   pinMode(RGBLED_Green, OUTPUT);
-  pinMode(LED2, OUTPUT);
-  pinMode(LED3, OUTPUT);
-  pinMode(LED4, OUTPUT);
+  pinMode(button, INPUT);
+
   Serial.begin(9600);
 }
 
@@ -101,8 +107,23 @@ void loop() {
   // Check to see if there is light in the room using the
   // photoresistor. If so, set the output to 0. Otherwise, use the
   // softpot.
-  if (analogRead(photosensor) < 100)
-    setVals(analogRead(softpot));
+  int current_light = analogRead(photosensor);
+  int current_soft = analogRead(softpot);
+  int button_state = digitalRead(button);
+  
+  if (button_state == HIGH) {
+    while (digitalRead(button) == HIGH);
+    toggleMode();
+  }
+  
+  if (current_light > psthreshold)
+    state = 1;
   else
-    setVals(analogRead(0));
+    state = 0;
+  
+  if (mode == 0) {
+    setVals(current_soft);
+  } else
+    setBrightness(current_soft);
+  }
 }
