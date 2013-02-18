@@ -35,6 +35,8 @@ int softpot = A0;
 int photosensor = A1;
 int button = 2;
 
+int rgb_r, rgb_g, rgb_b;
+
 // brightness ranges from 0 to 1
 double brightness = 1.0;
 
@@ -125,5 +127,4 @@ void loop() {
     setVals(current_soft);
   } else
     setBrightness(current_soft);
-  }
 }
