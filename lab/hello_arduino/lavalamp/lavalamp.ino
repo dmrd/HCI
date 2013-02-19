@@ -34,6 +34,7 @@ int RGB_G_mid = 900;
 int softpot = A0;
 int photosensor = A1;
 int button = 2;
+int color = 0;
 
 int rgb_r, rgb_g, rgb_b;
 
@@ -51,7 +52,7 @@ int psthreshold = 850;
 // state variable is:
 //    0: off
 //    1: on
-int state = 0;
+int state = 1;
 
 int getBrightness(double mid, double cur) {
   int t1 = abs(mid - cur);
@@ -90,10 +91,7 @@ void writeToLED() {
 }
 
 void toggleMode() {
-  if (mode == 1)
-    mode = 0;
-  else
-    mode = 1;
+  mode = (mode + 1) % 5;
 }
 
 void setup() {
@@ -112,19 +110,39 @@ void loop() {
   int current_light = analogRead(photosensor);
   int current_soft = analogRead(softpot);
   int button_state = digitalRead(button);
-  
+  /*
+  Serial.print(current_light);
+  Serial.print("\t");
+  Serial.print(current_soft);
+  Serial.print("\n");
+  */
   if (button_state == HIGH) {
     while (digitalRead(button) == HIGH);
     toggleMode();
+    Serial.print(mode);
+    Serial.print("\n");
   }
   
+  /*
+  //Disable/reenable when lights are on/off
   if (current_light > psthreshold)
     state = 1;
   else
-    state = 0;
+    //state = 0;
+    state = 1;
+    */
   
   if (mode == 0) {
     setVals(current_soft);
-  } else
+  } else if (mode == 1) {
     setBrightness(current_soft);
+  } else if (mode == 3) {
+    color = (color + 1) % 1024;
+    setVals((int)color);
+  } else if (mode == 4) {
+    color = (color + 1) % 2048;
+    Serial.print(color);
+    Serial.print("\n");
+    setVals(color/2);
+  }
 }
