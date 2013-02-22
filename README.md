@@ -1,4 +1,5 @@
 HCI
 ===
 
-COS426: Human-Computer Interaction projects
+COS426: Human-Computer Interaction projects for Andrew Cheong, David Dohan,
+Shuhbro Saha, and Miles Yucht.

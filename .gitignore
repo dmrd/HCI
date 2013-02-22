@@ -1,3 +1,4 @@
 #Don't want my xoj files, nor pdf documents
 *.pdf
 *.xoj
+individual/*
