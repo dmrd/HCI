@@ -58,12 +58,12 @@ int getBrightness(double mid, double cur) {
   int t1 = abs(mid - cur);
   int t2 = abs(mid - (cur - 1024));
   int t3 = abs(mid - (cur + 1024));
-  
+
   int test1 = min(t1, t2);
   int minimum = min(test1, t3);
-  
+
   if (minimum > range) return 0.0;
-  
+
   return 255 * (range - minimum) / range;
 }
 
@@ -73,14 +73,14 @@ void setVals(int cur) {
     rgb_g = getBrightness(RGB_G_mid, cur);
     rgb_b = getBrightness(RGB_B_mid, cur);
   }
-  
+
   writeToLED();
 }
 
 void setBrightness(double cur) {
-  if (state == 1) 
+  if (state == 1)
     brightness = cur / 1024;
-  
+
   writeToLED();
 }
 
@@ -122,7 +122,7 @@ void loop() {
     Serial.print(mode);
     Serial.print("\n");
   }
-  
+
   /*
   //Disable/reenable when lights are on/off
   if (current_light > psthreshold)
@@ -131,7 +131,7 @@ void loop() {
     //state = 0;
     state = 1;
     */
-  
+
   if (mode == 0) {
     setVals(current_soft);
   } else if (mode == 1) {
