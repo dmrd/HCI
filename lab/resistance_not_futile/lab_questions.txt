@@ -1,0 +1,31 @@
+1. It seems that the FSR can sense force no matter where you apply it
+on the sensor, so long as you press the sensor on the round
+part. However, the more area on the sensor covered when applying a
+constant force, the higher a value the FSR reports.
+2. Yes, the output of the FSR is a function of how hard you press.
+3. Minimum value observed is 0 with no pressure. Maximum value
+observed is 1007.
+4. The pull-down/pull-up resistor is not necessary for the rotary
+potentiometer because the slider divides the total resistance inside
+the potentiometer into two effective resistors. However, the flex
+sensor comprises only a single resistor. As such, without a
+pull-down/pull-up resistor, the voltage drop is always 5V. The
+additional resistor is needed to be able to modify the voltage drop
+across the FSR.
+5. The minimum value observed is 0, and the maximum value observed is
+1023.
+6. True
+7. The minimum value observed is 127. The maximum value observed is
+348.
+8. False. Bending the sensor in opposite directions has opposite
+effects on the measured voltage.
+9. For gentle pressing on the wires, the range of values is between 45
+and 49.
+10. For firm pressing on the wires, the range of values is between 50
+and 55.
+11. After wetting my fingers, the range of values was between 154 and
+230.
+12. When the sensor is entirely covered, the value observed is
+22.
+13. When the sensor is held up to a bright light source, the value
+observed is 1008.
