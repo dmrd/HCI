@@ -1,0 +1,47 @@
+1. Lowest is 0, highest is the maximum value of an integer.
+2. False
+3. lower resistance, lower time constant, lower value
+
+4. True, you have to squeeze much harder now to lower the counter the same amount.
+5. Higher capacitance can store more charge, thus it takes longer to pass through the same resistance.
+
+6. With the accelerometer on the Arduino, the x-values ranged from 265
+to 405, the y-values ranged from 265 to 403, and the z-values ranged
+from 286 to 418.
+
+7. True, the maximum value we observed in step 5 was higher than in
+step 4.
+
+8. By plugging the 3Vo pin to AREF, we were essentially rescaling the
+input to sense a signal between 0 and 3 volts as opposed to between 0
+and 5 volts by default. As such, signals will have higher readings
+when using this configuration rather than the one in step 4.
+
+9. For the x-axis, the values ranged from 80 to 514. For the y-axis,
+the values ranged from 7 to 675. For the z-axis, the values ranged
+from 149-554.
+
+10. In the x-direction, we measured 3.2 Gs of acceleration, in the
+y-direction 4.9 Gs, and in the z-direction 3 Gs.
+
+11. False, the relationship between angle and output is not linear.
+
+90 degrees
+345	401	347
+345	401	347
+
+45 degrees
+335	384	396
+336	384	397
+
+0 degrees
+337	329	418
+337	329	417
+
+-45 degrees
+328	293	403
+328	294	403
+
+-90 degrees
+326	266	356
+324	266	357
