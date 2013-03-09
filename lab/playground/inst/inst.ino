@@ -13,10 +13,12 @@ int numNotes = 7;
 int delayTime = 10;
 
 // notes in the melody:
-int notes[] = {NOTE_C4, NOTE_G3,NOTE_G3, NOTE_A3, NOTE_G3,0, NOTE_B3, NOTE_C4};
+int notes[] = {
+  NOTE_C4, NOTE_G3,NOTE_G3, NOTE_A3, NOTE_G3,0, NOTE_B3, NOTE_C4};
 
 // note durations: 4 = quarter note, 8 = eighth note, etc.:
-int durations[] = {4, 8, 8, 4,4,4,4,4 };
+int durations[] = {
+  4, 8, 8, 4,4,4,4,4 };
 
 //Accelerometer setup
 const int groundpin = A2; // analog input pin 2
@@ -28,7 +30,9 @@ const int zpin= A3; // z-axis
 int xval, yval, zval;
 int xsteady, ysteady, zsteady;
 int ythreshold = 10;
-int height = 0;
+int zvelocity = 0;
+
+int pitch = NOTE_C4;
 
 void setup() {
   //initialize the serial communications:
@@ -46,37 +50,41 @@ void setup() {
   xsteady = analogRead(xpin);
   ysteady = analogRead(ypin);
   zsteady = analogRead(zpin);
+  delay(200);
+  
+  int count = 50;
+  for (int i = 0; i < count; i++) {
+  xsteady += analogRead(xpin);
+  ysteady += analogRead(ypin);
+  zsteady += analogRead(zpin);
+  }
+  xsteady /= count;
+  ysteady /= count;
+  zsteady /= count;
 }
-
+int num = 0;
 void loop() {
   //read sensor values
   xval = analogRead(xpin);
   yval = analogRead(ypin);
   zval = analogRead(zpin);
   
-  int diff = yval - ysteady;
-  if (abs(diff) > ythreshold) {
-    height += diff;
+  int diff = zval - zsteady;
+  if (zval > 0 && abs(diff) < 50) {
+    int pitchmod = diff * 5;
+    int noteDuration = (1000 + diff * 20)/durations[note];
+    Serial.print("Note duration: ");
+    Serial.println(noteDuration);
+    tone(speakerPin, notes[note] - pitchmod,noteDuration);
+    // to distinguish the notes, set a minimum time between them.
+    // the note's duration + 30% seems to work well:
+    int pauseBetweenNotes = noteDuration * 1.30;
+    delay(pauseBetweenNotes);
+    // stop the tone playing:
+    noTone(speakerPin);
+    note = (note + 1) % numNotes;
   }
   
-  int pitchmod = height/10;
-  int noteDuration = (1000 - height)/durations[note];
-  tone(speakerPin, notes[note] + pitchmod,noteDuration);
-  // to distinguish the notes, set a minimum time between them.
-  // the note's duration + 30% seems to work well:
-  int pauseBetweenNotes = noteDuration * 1.30;
-  delay(pauseBetweenNotes);
-  // stop the tone playing:
-  noTone(speakerPin);
-  note = (note + 1) % numNotes;
-  
-  //print the sensor values:
-  Serial.print(xval);
-  Serial.print("\t");
-  Serial.print(yval);
-  Serial.print("\t");
-  Serial.println(zval);
-  delay(100);
 }
 
 
