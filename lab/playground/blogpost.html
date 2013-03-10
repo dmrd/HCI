@@ -1,0 +1,119 @@
+Team Members:
+<ul>
+	<li>Andrew Cheong (acheong@)</li>
+	<li>David Dohan (ddohan@)</li>
+	<li>Shubhro Saha (saha@)</li>
+	<li>Miles Yucht (myucht@)</li>
+</ul>
+Group Number: 21
+<h1><strong>Description</strong></h1>
+<strong></strong>For our project, we built an instrument that allows a person to conduct the tempo of a piece of music by walking.  The primary components of the instrument are piezos attached to each foot and two buzzers.  Taking a step moves the song along to the next note, and each song can have both a bass and treble part play simultaneously.  We built this project because we like the idea of being able to control existing music through motion.  We are pleased overall with the final product because it works as we envisioned it and is actually pretty fun to use.  There are a number of possible improvements that we would like to add, including the ability to change to different songs and read music from arbitrary midi files.  Additionally, the device is somewhat difficult to attach to your body: perhaps this could be made more portable by the use of a piezo sensor integrated into your shoes (along with a battery pack for the Arduino). We are also limited to songs which change on each tap of the foot, as opposed to songs that might have several pitches play per beat.  Other possibilities would be to synthesize the sound using processing or use a similar interface to create music (e.g. a different drum for each foot) as opposed to controlling existing music.
+<h1><strong>Prototypes</strong></h1>
+Before building out final product, we built three separate prototypes, with the third leading to our final product.
+<h2>Instrument 1 - Conducting a Choir</h2>
+When building our first prototype, we set out to be able to control the volume and pitch of a song by raising and lowering our hands (as if conducting a musical group).  While the final result worked, it did not perform as well as we had hoped.  The main issue with the instrument is that it is difficult to properly estimate changes in position from the accelerometer (although it naturally works very well for detecting actual accelerations).
+
+<a href="http://www.youtube.com/watch?v=12F_5PLsWPc">[youtube http://www.youtube.com/watch?v=12F_5PLsWPc&amp;w=560&amp;h=315] </a>
+<h2>Instrument 2 - Anger Management</h2>
+We liked the idea of using the force of a knock on a piezo to control sound.  In this project, hitting your computer results in it playing sound back at you that corresponds to how hard you hit it.
+
+[youtube http://www.youtube.com/watch?v=ev390h9Pgus&amp;w=560&amp;h=315]
+<h2>Instrument 3 - Walking Conductor</h2>
+This prototype is the core of our final instrument and is composed of piezos attached to each foot and a beeper.  Knocks (e.g. steps) on the piezos trigger the next note in a melody to play.
+
+[youtube http://www.youtube.com/watch?v=QSyH33IeRGk&amp;w=560&amp;h=315]
+
+<span style="color: #000000; font-weight: bold;">Final Instrument</span>
+
+We decided to modify the walking conductor instrument to allow multiple parts to play at once.  The control mechanism remained the same, but the addition of a second beeper allows us to play a bass part at the same time as the melody.
+
+[youtube http://www.youtube.com/watch?v=fGxzwXkJRnY&amp;w=560&amp;h=315]
+
+Parts list:
+<ul>
+	<li><span style="line-height: 15px;">2 piezo elements</span></li>
+	<li>2 beepers</li>
+	<li>2 rotary potentiometers</li>
+	<li>1 Arduino Uno</li>
+</ul>
+Instructions
+<ol>
+	<li></li>
+	<li></li>
+	<li> To allow the Arduino to modulate multiple beepers at once, download the "Arduino Tone Library" from <a href="https://code.google.com/p/rogue-code/wiki/ToneLibraryDocumentation">here</a>.  The library comes from the Rogue Robotics project.</li>
+	<li>Download our code below, and begin controlling Thus Spoke Zarathustra as you walk!  Different music can be played by replacing the trebleNotes and bassNotes arrays with different note sequences.</li>
+</ol>
+Code:
+<pre>#include "pitches.h"
+#include "Tone.h"
+#ifdef REST
+# undef REST
+#endif
+#define REST -1
+
+Tone bassTone;
+Tone trebleTone;
+
+int treblePin = 3;
+int bassPin = 6;
+int piezoPin1 = A0;
+int piezoPin2 = A1;
+
+int threshold = 50;
+
+int currentNote = 0;
+
+int pauseTime = 100;
+
+int trebleNotes[] = {NOTE_C4, NOTE_G4, NOTE_C5, REST, NOTE_E5, NOTE_DS5, REST, REST, REST, REST, REST, REST, REST, REST, REST, REST, REST, REST, 
+    NOTE_C4, NOTE_G4, NOTE_C5, REST, NOTE_DS5, NOTE_E5, REST, REST, REST, REST, REST, REST, REST, REST, REST, REST, REST, REST, NOTE_C4, NOTE_G4,
+    NOTE_C5, REST, NOTE_E4, NOTE_A4, NOTE_A4, NOTE_B4, NOTE_C5, NOTE_D5, NOTE_E5,
+    NOTE_F5, NOTE_G5, NOTE_G5, NOTE_G5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6, REST};
+
+int bassNotes[] = {NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, 
+NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, 
+NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_C4, NOTE_C4, NOTE_G4, NOTE_E4,
+NOTE_C4, NOTE_G3, NOTE_G3, NOTE_E3, NOTE_A3, NOTE_G3, NOTE_C4, REST};
+
+void waitForKnock() {
+  int sense1, sense2;  
+  while (true) {
+      sense1 = analogRead(piezoPin1);
+      sense2 = analogRead(piezoPin2);
+      if (sense1 &gt; threshold || sense2 &gt; threshold)
+        break;
+      Serial.print(threshold - sense1);
+      Serial.print(", ");
+      Serial.println(threshold - sense2);
+    }
+    Serial.println(sense1);
+    Serial.println(sense2);
+}
+
+void playTone(Tone tone, int notes[]) {
+  if (notes[currentNote] == REST)
+    tone.stop();
+  else
+    tone.play(notes[currentNote]);
+}
+
+void playNextNote() {
+  if (currentNote &lt;= 57) {
+    playTone(trebleTone, trebleNotes);
+    playTone(bassTone, bassNotes);
+  } else
+    currentNote = -1;
+  currentNote++;
+}
+
+void setup() {
+  bassTone.begin(3);
+  trebleTone.begin(6);
+  Serial.begin(9600);
+}
+
+void loop() {
+    waitForKnock();
+    playNextNote();
+    delay(pauseTime);
+}</pre>
