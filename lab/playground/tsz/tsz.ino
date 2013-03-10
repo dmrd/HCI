@@ -20,19 +20,32 @@ int trebleNotes[] = {NOTE_C4, NOTE_G4, NOTE_C5, REST, NOTE_E5, NOTE_DS5, REST,
     NOTE_F5, NOTE_G5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6, REST};
 
 void waitForKnock() {
-    while (analogRead(piezoPin1) < threshold || analogRead(piezoPin2) < threshold)
-        ;
+  int sense1, sense2;  
+  while (true) {
+      sense1 = analogRead(piezoPin1);
+      sense2 = analogRead(piezoPin2);
+      if (sense1 > threshold || sense2 > threshold)
+        break;
+      Serial.print(threshold - sense1);
+      Serial.print(", ");
+      Serial.println(threshold - sense2);
+    }
+    Serial.println(sense1);
+    Serial.println(sense2);
 }
 
 void playNextNote() {
-    if (trebleNotes[currentTone] == REST)
+    if (trebleNotes[currentNote] == REST)
         noTone(treblePin);
-    else
+    else if (currentNote <= 33)
         tone(treblePin, trebleNotes[currentNote]);
+    else
+        currentNote = -1;
     currentNote++;
 }
 
 void setup() {
+  Serial.begin(9600);
 }
 
 void loop() {
