@@ -34,17 +34,33 @@ Parts list:
 	<li><span style="line-height: 15px;">2 piezo elements</span></li>
 	<li>2 beepers</li>
 	<li>2 rotary potentiometers</li>
+        <li>2 1-megaohm resistors</li>
 	<li>1 Arduino Uno</li>
+        <li>4+ alligator clip cables</li>
+        <li>Electrical tape</li>
 </ul>
-Instructions
+Assembly Instructions:
 <ol>
-	<li></li>
-	<li></li>
-	<li> To allow the Arduino to modulate multiple beepers at once, download the "Arduino Tone Library" from <a href="https://code.google.com/p/rogue-code/wiki/ToneLibraryDocumentation">here</a>.  The library comes from the Rogue Robotics project.</li>
-	<li>Download our code below, and begin controlling Thus Spoke Zarathustra as you walk!  Different music can be played by replacing the trebleNotes and bassNotes arrays with different note sequences.</li>
+  <li>On a breadboard, connect one end of one resistor to analog pin A0 and the other end to ground. Connect one end of other resistor to analog pin A1 and the other end to ground.</li>
+  <li>Connect one piezo element in parallel with each resistor, attaching it to the breadboard using the alligator clip cables.</li>
+  <li>On a breadboard, connect pin 1 of one potentiometer to digital pin 3, pin 2 to one beeper, and pin 3 to ground. Connect pin 1 of the other potentiometer to digital pin 6, pin 2 to the other beeper, and pin 3 to ground.</li>
+  <li>Connect the other pins on each beeper to ground.</li>
+  <li>Attach the piezo elements to your shoes using electrical tape.</li>
+  <li>Run around to your favorite song!</li>
+</ol>
+
+Source Code Instructions:
+<ol>
+	<li>This code makes use of the <a href="https://code.google.com/p/rogue-code/wiki/ToneLibraryDocumentation">"Arduino Tone Library"</a> which allows one to play multiple notes simultaneously using the arduino. It is required to run our code, so download it using the link above. The library comes from the Rogue Robotics project.</li>
+	<li>Download our code below, and begin controlling Thus Spoke Zarathustra as you walk! Different music can be played by replacing the trebleNotes and bassNotes arrays with different note sequences.</li>
 </ol>
 Code:
-<pre>#include "pitches.h"
+<pre>/*
+ * COS 436 Lab 2: Sensor Playground
+ * Author: Miles Yucht, David Dohan
+ * Plays "Thus Spoke Zarathustra" by Richard Strauss on beats measured by piezo elements.
+ */
+#include "pitches.h"
 #include "Tone.h"
 #ifdef REST
 # undef REST
@@ -65,11 +81,13 @@ int currentNote = 0;
 
 int pauseTime = 100;
 
+//melody to Thus Spoke Zarathustra
 int trebleNotes[] = {NOTE_C4, NOTE_G4, NOTE_C5, REST, NOTE_E5, NOTE_DS5, REST, REST, REST, REST, REST, REST, REST, REST, REST, REST, REST, REST, 
     NOTE_C4, NOTE_G4, NOTE_C5, REST, NOTE_DS5, NOTE_E5, REST, REST, REST, REST, REST, REST, REST, REST, REST, REST, REST, REST, NOTE_C4, NOTE_G4,
     NOTE_C5, REST, NOTE_E4, NOTE_A4, NOTE_A4, NOTE_B4, NOTE_C5, NOTE_D5, NOTE_E5,
     NOTE_F5, NOTE_G5, NOTE_G5, NOTE_G5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6, REST};
 
+//bassline to Thus Spoke Zarathustra
 int bassNotes[] = {NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, 
 NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, 
 NOTE_C4, NOTE_G3, NOTE_C4, NOTE_G3, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_C4, NOTE_C4, NOTE_G4, NOTE_E4,
@@ -82,12 +100,16 @@ void waitForKnock() {
       sense2 = analogRead(piezoPin2);
       if (sense1 &gt; threshold || sense2 &gt; threshold)
         break;
+      /*
       Serial.print(threshold - sense1);
       Serial.print(", ");
       Serial.println(threshold - sense2);
+      */
     }
+    /*
     Serial.println(sense1);
     Serial.println(sense2);
+    */
 }
 
 void playTone(Tone tone, int notes[]) {
@@ -109,7 +131,9 @@ void playNextNote() {
 void setup() {
   bassTone.begin(3);
   trebleTone.begin(6);
+  /*
   Serial.begin(9600);
+  */
 }
 
 void loop() {
