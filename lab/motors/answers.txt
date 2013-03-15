@@ -1,0 +1,26 @@
+1. I can easily stop the motor with my fingers at any setting. We
+attached tape to the motor, and at the lower settings (70 and below)
+the motor didn't have enough torque to overpower the tape's
+resistance. However, it can move pretty fast.
+
+2. We use a transistor so that we don't need to power the motor with a
+variable large current. Instead, we can simply vary a much smaller
+current (such as that of pin 3) and use that pin to complete the
+circuit by triggering the transistor as a switch.
+
+3. The diode is a safety measure for the Arduino. If there were no
+diode between the leads of the motor, when turning off the motor,
+there would be a spike of negative voltage, which could damage the
+Arduino; the diode shorts this spike so it doesn't affect any other
+circuitry.
+
+4. The servo is much more powerful than the DC motor.
+
+5. The effective range of the servo is 180 degrees (pi radians).
+
+6. DC motors can spin with a constant velocity, whereas servos spin to
+a defined position. Hence, one might use a DC motor for continuous or
+roughly continuous motion, such as opening a garage door. However,
+when you want precise control of the angle for the motor, such as if
+you're controlling the flaps on a model airplane, a servo is much
+better and more appropriate.
