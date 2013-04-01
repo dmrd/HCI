@@ -14,7 +14,8 @@ void setup()
 void loop()
 {
   if (Serial.available())
-  {
+  {  Serial.println("Speed 0 to 255");
+
     int speed = Serial.parseInt();
     if (speed >= 0 && speed <= 255)
     {
